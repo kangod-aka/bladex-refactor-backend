@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DiscordSnowflake } from '@sapphire/snowflake';
+import { Md5 } from 'ts-md5';
 import { Repository } from 'typeorm';
-import { toNumber} from 'lodash';
 import { UserEntity } from '../entity/user.entity';
 
 @Injectable()
@@ -11,7 +11,10 @@ export class UserService {
   constructor(@InjectRepository(UserEntity) protected userRepository: Repository<UserEntity>) {}
 
   create(userEntity: UserEntity) {
-    userEntity.id = toNumber(DiscordSnowflake.generate()+"");
+    // ID使用雪花算法
+    userEntity.id = Number(DiscordSnowflake.generate() + "");
+    // 密码使用MD5加密
+    userEntity.password = Md5.hashStr(userEntity.password);
     return this.userRepository.save(userEntity);
   }
 
@@ -24,6 +27,8 @@ export class UserService {
   }
 
   async update(id: number, userEntity: UserEntity) {
+    // 密码使用MD5加密
+    userEntity.password = Md5.hashStr(userEntity.password);
     await this.userRepository.update(id, userEntity);
     return this.findOne(id);
   }
