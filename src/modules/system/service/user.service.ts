@@ -3,7 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DiscordSnowflake } from '@sapphire/snowflake';
 import { Md5 } from 'ts-md5';
 import { Repository } from 'typeorm';
-import { UserEntity } from '../entity/user.entity';
+import { UserEntity } from '../entity';
+import { QueryUserDto } from "../dto/query-user.dto";
 
 @Injectable()
 export class UserService {
@@ -35,5 +36,14 @@ export class UserService {
 
   remove(id: number) {
     return this.userRepository.delete(id);
+  }
+
+  async pageQuery(dto: QueryUserDto) {
+    const skip = dto.size * (dto.page - 1);
+    return await this.userRepository
+        .createQueryBuilder("blade_user")
+        .skip(skip)
+        .take(dto.size)
+        .getMany();
   }
 }

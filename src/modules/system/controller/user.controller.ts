@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
-import { UserService } from '../service/user.service';
+import { UserService } from '../service';
 import { UserEntity } from '../entity';
+import {QueryUserDto} from "../dto/query-user.dto";
 
 @Controller('user')
 export class UserController {
@@ -29,5 +30,10 @@ export class UserController {
   @Delete(':id')
   remove(@Param('id') id: number) {
     return this.userService.remove(id);
+  }
+
+  @Post("pageQuery")
+  async pageQuery(@Body() dto: QueryUserDto) {
+    return await this.userService.pageQuery(dto);
   }
 }
