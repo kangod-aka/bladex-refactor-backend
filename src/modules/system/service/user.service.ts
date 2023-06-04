@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { DiscordSnowflake } from '@sapphire/snowflake';
 import { Repository } from 'typeorm';
-
+import { toNumber} from 'lodash';
 import { UserEntity } from '../entity/user.entity';
-import { CreateUserDto } from '../entity/dto/create-user.dto';
-import { UpdateUserDto } from '../entity/dto/update-user.dto';
 
 @Injectable()
 export class UserService {
 
   constructor(@InjectRepository(UserEntity) protected userRepository: Repository<UserEntity>) {}
 
-  create(createUserDto: CreateUserDto) {
-    return this.userRepository.save(createUserDto);
+  create(userEntity: UserEntity) {
+    userEntity.id = toNumber(DiscordSnowflake.generate()+"");
+    return this.userRepository.save(userEntity);
   }
 
   findAll() {
@@ -23,8 +23,8 @@ export class UserService {
     return this.userRepository.findOne({ where: { id } });
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
-    await this.userRepository.update(id, updateUserDto);
+  async update(id: number, userEntity: UserEntity) {
+    await this.userRepository.update(id, userEntity);
     return this.findOne(id);
   }
 
