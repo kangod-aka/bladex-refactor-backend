@@ -4,8 +4,7 @@ import {
     IsNumber,
     IsOptional,
     IsNotEmpty,
-    Min,
-    IsDefined
+    Min
 } from 'class-validator';
 
 import { toNumber } from 'lodash';
