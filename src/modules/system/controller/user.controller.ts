@@ -1,15 +1,21 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import { Controller, Body, Param, Query, Get, Post, Put, Delete, ValidationPipe } from '@nestjs/common';
 import { UserService } from '../service';
-import { UserEntity } from '../entity';
-import {QueryUserDto} from "../dto/query-user.dto";
+import {CreateUserDto, QueryUserDto, UpdateUserDto} from "../dto";
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  create(@Body() userEntity: UserEntity) {
-    return this.userService.create(userEntity);
+  create(@Body(
+          new ValidationPipe({
+            transform: true,
+            forbidUnknownValues: true,
+            validationError: { target: false },
+            groups: ['create'],
+          }),
+      ) createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto);
   }
 
   @Get()
@@ -23,8 +29,15 @@ export class UserController {
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() userEntity: UserEntity) {
-    return this.userService.update(id, userEntity);
+  update(@Param('id') id: number,
+         @Body(new ValidationPipe({
+              transform: true,
+              forbidUnknownValues: true,
+              validationError: { target: false },
+              groups: ['update'],
+          }),
+      ) updateUserDto: UpdateUserDto) {
+    return this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
@@ -32,8 +45,14 @@ export class UserController {
     return this.userService.remove(id);
   }
 
-  @Post("pageQuery")
-  async pageQuery(@Body() dto: QueryUserDto) {
-    return await this.userService.pageQuery(dto);
+  @Get("pageQuery")
+  async pageQuery(@Query(
+        new ValidationPipe({
+          transform: true,
+          forbidUnknownValues: true,
+          validationError: { target: false },
+        }),
+    ) queryUserDto: QueryUserDto) {
+    return await this.userService.pageQuery(queryUserDto);
   }
 }

@@ -4,19 +4,20 @@ import { DiscordSnowflake } from '@sapphire/snowflake';
 import { Md5 } from 'ts-md5';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../entity';
-import { QueryUserDto } from "../dto/query-user.dto";
+import { CreateUserDto, QueryUserDto, UpdateUserDto } from "../dto";
+import { isNil } from 'lodash';
 
 @Injectable()
 export class UserService {
 
   constructor(@InjectRepository(UserEntity) protected userRepository: Repository<UserEntity>) {}
 
-  create(userEntity: UserEntity) {
+  create(createUserDto: CreateUserDto) {
     // ID使用雪花算法
-    userEntity.id = Number(DiscordSnowflake.generate() + "");
+    createUserDto.id = Number(DiscordSnowflake.generate() + "");
     // 密码使用MD5加密
-    userEntity.password = Md5.hashStr(userEntity.password);
-    return this.userRepository.save(userEntity);
+    createUserDto.password = Md5.hashStr(createUserDto.password);
+    return this.userRepository.save(createUserDto);
   }
 
   findAll() {
@@ -27,10 +28,12 @@ export class UserService {
     return this.userRepository.findOne({ where: { id } });
   }
 
-  async update(id: number, userEntity: UserEntity) {
-    // 密码使用MD5加密
-    userEntity.password = Md5.hashStr(userEntity.password);
-    await this.userRepository.update(id, userEntity);
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    /*// 密码使用MD5加密（不允许修改密码）
+    if (!isNil(updateUserDto.password)) {
+      Md5.hashStr(updateUserDto.password);
+    }*/
+    await this.userRepository.update(id, updateUserDto);
     return this.findOne(id);
   }
 
@@ -40,10 +43,11 @@ export class UserService {
 
   async pageQuery(dto: QueryUserDto) {
     const skip = dto.size * (dto.page - 1);
+    const take = dto.size;
     return await this.userRepository
         .createQueryBuilder("blade_user")
         .skip(skip)
-        .take(dto.size)
+        .take(take)
         .getMany();
   }
 }
