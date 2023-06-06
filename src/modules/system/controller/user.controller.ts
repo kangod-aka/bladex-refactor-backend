@@ -1,6 +1,7 @@
-import { Controller, Body, Param, Query, Get, Post, Put, Delete, ValidationPipe } from '@nestjs/common';
+import { Controller, Body, Param, Query, Get, Post, Put, Delete, ValidationPipe, SerializeOptions } from '@nestjs/common';
 import { UserService } from '../service';
-import {CreateUserDto, QueryUserDto, UpdateUserDto} from "../dto";
+import { CreateUserDto, QueryUserDto, UpdateUserDto } from "../dto";
+import { DeleteDto } from '@/modules/restful/dto';
 
 @Controller('user')
 export class UserController {
@@ -72,6 +73,16 @@ export class UserController {
     @Get("info/:id")
     info(@Param('id') id: number) {
         return this.userService.info(id);
+    }
+
+    /**
+     * 批量删除（软删除），把ID弄成字符串数组传入
+     * @param data TODO: 验证DTO，验证没生效
+     */
+    @Delete()
+    @SerializeOptions({ groups: ['user-list'] })
+    async delete(@Body() data: DeleteDto) {
+        return this.userService.removeForBatch(data.ids);
     }
 
 }

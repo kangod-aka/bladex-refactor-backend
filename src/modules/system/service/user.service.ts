@@ -18,7 +18,7 @@ export class UserService {
 	) {}
 
 	findAll() {
-		return this.userRepository.find();
+		return this.userRepository.find({ where: { isDeleted: 0 } });
 	}
 
 	findOne(id: number) {
@@ -56,7 +56,8 @@ export class UserService {
 		const skip = dto.size * (dto.page - 1);
 		const take = dto.size;
 		return await this.userRepository
-				.createQueryBuilder("blade_user")
+				.createQueryBuilder("bu")
+				.where("bu.isDeleted = 0")
 				.skip(skip)
 				.take(take)
 				.getMany();
@@ -69,9 +70,9 @@ export class UserService {
     	// 先根据用户ID查询用户信息
 		const userEntity = await this.findOne(id);
 		// 把用户的多个角色ID以","分隔，转为字符串数组
-		const roleIdArray: string[] = userEntity.roleId.toString().split(",");
+		const roleIdArray: string[] = userEntity.roleId.split(",");
 		// 部门ID，同上
-		const deptIdArray: string[] = userEntity.deptId.toString().split(",");
+		const deptIdArray: string[] = userEntity.deptId.split(",");
 		// 根据角色ID字符串数组查询角色名称，并返回拼接好的字符串
 		let roleNameStr = await this.getRoleNameStrByRoleIdArray(roleIdArray);
 		// 部门ID，同上
@@ -128,5 +129,15 @@ export class UserService {
 			}
 		});
 		return deptNameStr;
+	}
+
+	/**
+	 * 批量删除（软删除），把ID弄成字符串数组传入
+	 */
+	async removeForBatch(ids: string[]) {
+		// 软删除，只修改isDeleted的值
+		let userEntity = new UserEntity();
+		userEntity.isDeleted = 1;
+		return this.userRepository.update(ids, userEntity);
 	}
 }
