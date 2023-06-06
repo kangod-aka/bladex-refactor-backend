@@ -1,9 +1,9 @@
 import { Column, Entity } from "typeorm";
 
-@Entity("blade_dept", { schema: "blade" })
-export class BladeDept {
+@Entity("blade_role", { schema: "blade" })
+export class RoleEntity {
   @Column("bigint", { primary: true, name: "id", comment: "主键" })
-  id: string;
+  id: number;
 
   @Column("varchar", {
     name: "tenant_id",
@@ -23,39 +23,23 @@ export class BladeDept {
   parentId: string | null;
 
   @Column("varchar", {
-    name: "ancestors",
+    name: "role_name",
     nullable: true,
-    comment: "祖级列表",
-    length: 2000,
+    comment: "角色名",
+    length: 255,
   })
-  ancestors: string | null;
-
-  @Column("varchar", {
-    name: "dept_name",
-    nullable: true,
-    comment: "部门名",
-    length: 45,
-  })
-  deptName: string | null;
-
-  @Column("varchar", {
-    name: "full_name",
-    nullable: true,
-    comment: "部门全称",
-    length: 45,
-  })
-  fullName: string | null;
+  roleName: string | null;
 
   @Column("int", { name: "sort", nullable: true, comment: "排序" })
   sort: number | null;
 
   @Column("varchar", {
-    name: "remark",
+    name: "role_alias",
     nullable: true,
-    comment: "备注",
+    comment: "角色别名",
     length: 255,
   })
-  remark: string | null;
+  roleAlias: string | null;
 
   @Column("int", {
     name: "is_deleted",

@@ -6,11 +6,11 @@ import { DatabaseModule } from '../database/database.module';
 import { UserController } from './controller';
 import { UserService } from './service';
 // import { PostRepository } from './repository';
-import { UserEntity } from './entity';
+import { UserEntity, RoleEntity, DeptEntity } from './entity';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([UserEntity]),
+        TypeOrmModule.forFeature([UserEntity, RoleEntity, DeptEntity]),
         // 调用装饰器自定义方法，注册自定义repository
         // DatabaseModule.forRepository([PostRepository]),
     ],

@@ -7,6 +7,21 @@ export class UserController {
 
 	constructor(private readonly userService: UserService) {}
 
+    @Get()
+    findAll() {
+        return this.userService.findAll();
+    }
+
+    @Get(':id')
+    findOne(@Param('id') id: number) {
+        return this.userService.findOne(id);
+    }
+
+    @Delete(':id')
+    remove(@Param('id') id: number) {
+        return this.userService.remove(id);
+    }
+
     /**
      * 新建用户，添加ValidationPipe验证管道
      */
@@ -21,16 +36,6 @@ export class UserController {
         ) createUserDto: CreateUserDto) {
         return this.userService.create(createUserDto);
     }
-
-	@Get()
-	findAll() {
-		return this.userService.findAll();
-	}
-
-	@Get(':id')
-	findOne(@Param('id') id: number) {
-		return this.userService.findOne(id);
-	}
 
     /**
      * 更新用户，添加ValidationPipe验证管道
@@ -47,11 +52,6 @@ export class UserController {
 		return this.userService.update(id, updateUserDto);
 	}
 
-	@Delete(':id')
-	remove(@Param('id') id: number) {
-		return this.userService.remove(id);
-	}
-
     /**
      * 分页查询，验证分页参数
      */
@@ -65,4 +65,13 @@ export class UserController {
         ) queryUserDto: QueryUserDto) {
         return await this.userService.pageQuery(queryUserDto);
 	}
+
+    /**
+     * 查询用户信息，并附带其他关联数据
+     */
+    @Get("info/:id")
+    info(@Param('id') id: number) {
+        return this.userService.info(id);
+    }
+
 }
