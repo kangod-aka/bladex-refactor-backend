@@ -1,9 +1,9 @@
 import { Column, Entity } from "typeorm";
 
 @Entity("blade_dict", { schema: "blade" })
-export class BladeDict {
+export class DictEntity {
   @Column("bigint", { primary: true, name: "id", comment: "主键" })
-  id: string;
+  id: number;
 
   @Column("bigint", {
     name: "parent_id",

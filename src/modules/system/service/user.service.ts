@@ -3,10 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DiscordSnowflake } from '@sapphire/snowflake';
 import { Md5 } from 'ts-md5';
 import { Repository } from 'typeorm';
-import { UserEntity, RoleEntity } from '../entity';
+import { UserEntity, RoleEntity, DeptEntity, DictEntity } from '../entity';
 import { CreateUserDto, QueryUserDto, UpdateUserDto } from "../dto";
 import { QueryUserVo } from "../vo";
-import {DeptEntity} from "@/modules/system/entity/dept.entity";
 
 @Injectable()
 export class UserService {
@@ -14,7 +13,8 @@ export class UserService {
 	constructor(
 		@InjectRepository(UserEntity) protected userRepository: Repository<UserEntity>,
 		@InjectRepository(RoleEntity) protected roleRepository: Repository<RoleEntity>,
-		@InjectRepository(DeptEntity) protected deptRepository: Repository<DeptEntity>
+		@InjectRepository(DeptEntity) protected deptRepository: Repository<DeptEntity>,
+		@InjectRepository(DictEntity) protected dictRepository: Repository<DictEntity>
 	) {}
 
 	findAll() {
@@ -79,9 +79,12 @@ export class UserService {
 		// 把entity转换为VO对象
 		let queryUserVo = new QueryUserVo();
 		Object.assign(queryUserVo, userEntity);
+		// 去字典值表中查询性别value
+		let dictEntity = await this.dictRepository.findOne({ where: { code: "sex", dictKey: userEntity.sex, isDeleted: 0 } });
 		// 赋值
 		queryUserVo.roleName = roleNameStr;
 		queryUserVo.deptName = deptNameStr;
+		queryUserVo.sexName = dictEntity.dictValue;
 		return queryUserVo;
 	}
 
