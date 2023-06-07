@@ -3,9 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DiscordSnowflake } from '@sapphire/snowflake';
 import { Md5 } from 'ts-md5';
 import { Repository } from 'typeorm';
+
 import { UserEntity, RoleEntity, DeptEntity, DictEntity } from '../entity';
 import { CreateUserDto, QueryUserDto, UpdateUserDto } from "../dto";
 import { QueryUserVo } from "../vo";
+import { UserRepository } from '../repository';
+import { PaginateOptions, QueryHook } from '../../database/types';
+import { paginate } from '@/modules/database/helpers';
 
 @Injectable()
 export class UserService {
@@ -14,7 +18,8 @@ export class UserService {
 		@InjectRepository(UserEntity) protected userRepository: Repository<UserEntity>,
 		@InjectRepository(RoleEntity) protected roleRepository: Repository<RoleEntity>,
 		@InjectRepository(DeptEntity) protected deptRepository: Repository<DeptEntity>,
-		@InjectRepository(DictEntity) protected dictRepository: Repository<DictEntity>
+		@InjectRepository(DictEntity) protected dictRepository: Repository<DictEntity>,
+		protected userCustomRepository: UserRepository
 	) {}
 
 	findAll() {
@@ -140,4 +145,17 @@ export class UserService {
 		userEntity.isDeleted = 1;
 		return this.userRepository.update(ids, userEntity);
 	}
+
+	/**
+	 * 获取分页数据
+	 * @param options 分页选项
+	 * @param callback 添加额外的查询
+	 */
+	async paginate(options: PaginateOptions, callback?: QueryHook<UserEntity>) {
+		// 获取到创建好的SelectQueryBuilder，用于多个查询时的复用
+		const qb = await this.userCustomRepository.buildBaseQB();
+		// if (callback) return callback(qb);
+		return paginate(qb, options);
+	}
+
 }

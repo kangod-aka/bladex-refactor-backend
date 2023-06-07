@@ -1,7 +1,9 @@
 import { Controller, Body, Param, Query, Get, Post, Put, Delete, ValidationPipe, SerializeOptions } from '@nestjs/common';
+
 import { UserService } from '../service';
 import { CreateUserDto, QueryUserDto, UpdateUserDto } from "../dto";
 import { DeleteDto } from '@/modules/restful/dto';
+import { PaginateOptions } from '../../database/types';
 
 @Controller('user')
 export class UserController {
@@ -83,6 +85,14 @@ export class UserController {
     @SerializeOptions({ groups: ['user-list'] })
     async delete(@Body() data: DeleteDto) {
         return this.userService.removeForBatch(data.ids);
+    }
+
+    /**
+     * 自定义分页查询
+     */
+    @Get("paginate")
+    async paginate(@Query() options: PaginateOptions) {
+        return this.userService.paginate(options);
     }
 
 }
