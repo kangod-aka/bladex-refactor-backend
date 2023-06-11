@@ -1,4 +1,4 @@
-import { IsDefined, IsUUID } from 'class-validator';
+import { IsDefined, IsNumber } from 'class-validator';
 
 import { DtoValidation } from '@/modules/core/decorator';
 
@@ -7,7 +7,7 @@ import { DtoValidation } from '@/modules/core/decorator';
  */
 @DtoValidation()
 export class DeleteDto {
-    @IsUUID(undefined, {
+    @IsNumber( undefined, {
         each: true,
         message: 'ID格式错误',
     })
@@ -15,5 +15,5 @@ export class DeleteDto {
         each: true,
         message: 'ID必须指定',
     })
-    ids: string[] = [];
+    ids: number[] = [];
 }

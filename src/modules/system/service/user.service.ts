@@ -137,9 +137,9 @@ export class UserService {
 	}
 
 	/**
-	 * 批量删除（软删除），把ID弄成字符串数组传入
+	 * 批量删除（软删除），传入ID数组
 	 */
-	async removeForBatch(ids: string[]) {
+	async removeForBatch(ids: number[]) {
 		// 软删除，只修改isDeleted的值
 		let userEntity = new UserEntity();
 		userEntity.isDeleted = 1;

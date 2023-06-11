@@ -78,11 +78,10 @@ export class UserController {
     }
 
     /**
-     * 批量删除（软删除），把ID弄成字符串数组传入
-     * @param data TODO: 验证DTO，验证没生效
+     * 批量删除（软删除），传入ID数组
+     * @param data
      */
     @Delete()
-    @SerializeOptions({ groups: ['user-list'] })
     async delete(@Body() data: DeleteDto) {
         return this.userService.removeForBatch(data.ids);
     }
